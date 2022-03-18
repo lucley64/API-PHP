@@ -60,7 +60,7 @@
             // Il faudrait créer une API de conversion
             function longitude_coversion($long3857, $lat3857)
             {
-                $json = json_decode(file_get_contents("http://lakartxela.iutbayonne.univ-pau.fr/~lleydert/M41%2002C/API-PHP/Conversion/3857To4326/$long3857/$lat3857/"));
+                $json = json_decode(file_get_contents("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "/Conversion/3857To4326/$long3857/$lat3857/"));
                 $latitude = $json->{'lat4326'};
                 $longitude = $json->{'long4326'};
                 var_dump($latitude);
