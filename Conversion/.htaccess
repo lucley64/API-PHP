@@ -1,0 +1,3 @@
+RewriteEngine on
+RewriteRule "^3857To4326/(-?[0-9]*\.[0-9]*)/(-?[0-9]*\.[0-9]*)" "conversion.php?long3857=$1&lat3857=$2"
+RewriteRule "" "conversion.php"
