@@ -31,19 +31,26 @@ session_start();
     <!-- On charge du ajax pour faire des requêtes sur l'api db-ip et l'api ipinfo -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <?php
+    // Ou initialise le tableau des villes
+    $listVilles = [];
+    // on recupère les villes déjà saisies
+    if (isset($_SESSION['Villes'])) {
+        $listVilles = unserialize($_SESSION['Villes']);
+    }
+    // si une nouvelle ville est saisie on recupère ses coordonées
     if (isset($_POST["NomVille"])) {
-        if (isset($_SESSION['Villes'])) {
-            $listVilles = unserialize($_SESSION['Villes']);
-        }
-        $jsonVilles = json_decode(file_get_contents("http://api.geonames.org/search?name_equals=" . $_POST["NomVille"] . "&maxRows=10&featureCode=PPLC&featureCode=P&username=shinokiku&type=json&featureCode=PPL&country=FR"));
-        echo '<script>function addVilles(macarte){';
+        $jsonVilles = json_decode(file_get_contents("http://api.geonames.org/search?name_equals=" . $_POST["NomVille"] . "&maxRows=10&featureClass=P&username=shinokiku&type=json&country=FR"));
         foreach ($jsonVilles->{'geonames'} as &$ville) {
-            echo 'ajouterMarker(\'' . $ville->{'name'} . '\', ' . $ville->{'lat'} . ', ' . $ville->{'lng'} . ', macarte);';
             $listVilles[] = $ville;
         }
-        echo '}</script>';
-        $_SESSION['Villes'] = serialize($listVilles);
     }
+    // on pointe les villes sur la carte
+    echo '<script>function addVilles(macarte){';
+    foreach ($listVilles as &$ville) {
+        echo 'ajouterMarker(\'' . $ville->{'name'} . '\', ' . $ville->{'lat'} . ', ' . $ville->{'lng'} . ', macarte);';
+    }
+    echo '}</script>';
+    $_SESSION['Villes'] = serialize($listVilles);
     ?>
 
     <!-- Ici le script pour traiter et afficher la map -->
@@ -55,6 +62,7 @@ session_start();
         }
 
         var macarte = null;
+
         function afficherMap() {
             // On definit la hauteur et la largeur de la map sinon elle ne s'affiche pas
             document.getElementById('style').innerHTML = "#map{height:" + (window.innerHeight - 25) + "px;width:" + (window.innerWidth - 25) + "px;}"
