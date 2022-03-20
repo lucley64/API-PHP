@@ -13,8 +13,10 @@ if (isset($_GET['long3857']) && isset($_GET['lat3857'])) {
     $latitude = $latitude - 90;
     $retour->{'long4326'} = $longitude;
     $retour->{'lat4326'} = $latitude;
-}
-else{
+} elseif (isset($_GET['kilometers'])) {
+    $retour->{'latitude'} = $_GET['kilometers'] * (360/40075);
+    $retour->{'longitude'} = $_GET['kilometers'] * (360/23903.297);
+} else {
     $retour->{'error'} = "Erreur dans l'url";
 }
 

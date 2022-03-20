@@ -16,12 +16,12 @@ session_start();
 </head>
 
 <body>
-    <form action="#" method="post">
+    <!-- <form action="#" method="post">
         <label for="NomVille">Entrer le nom de la ville</label>
         <input type="text" id="NomVille" name="NomVille">
         <button type="submit">Rechercher</button>
         <a href="clear.php">Clear</a>
-    </form>
+    </form> -->
     <div id="map">
         <!-- Ici s'affichera la carte -->
     </div>
