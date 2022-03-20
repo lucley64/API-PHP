@@ -33,7 +33,21 @@ session_start();
         echo 'ajouterMarker(\'' . $magasin->{'nom'} . '\', ' . $magasin->{'coords'}->{'lat'} . ', ' . $magasin->{'coords'}->{'long'} . ', macarte);';
     }
     echo '}</script>';
-    var_dump($recu);
+
+    echo '<script>function addRayonVilles(macarte){';
+    $i = 0;
+    foreach ($recu->{'Villes'} as &$ville){
+        $lng1 = $ville->{'lng'} - $recu->{'rayon'}->{'longitude'};
+        $lng2 = $ville->{'lng'} + $recu->{'rayon'}->{'longitude'};
+        $lat1 = $ville->{'lat'} - $recu->{'rayon'}->{'latitude'};
+        $lat2 = $ville->{'lat'} + $recu->{'rayon'}->{'latitude'};
+        echo 'var bounds'.$i.' = [['.$lat1.','.$lng1.'],['.$lat2.','.$lng2.']];';
+        echo 'var rect'.$i.' = L.rectangle(bounds'.$i.', {color: "#ff7800", weight: 1});';
+        echo 'rect'.$i.'.bindPopup("'.$ville->{'name'}.'");';
+        echo 'rect'.$i.'.addTo(macarte);';
+        $i++;
+    }
+    echo '}</script>';
     ?>
 
     <!-- Ici le script pour traiter et afficher la map -->
@@ -69,6 +83,7 @@ session_start();
                     var marker = L.marker([lat, lon]).addTo(macarte)
                     marker.bindPopup("Vous êtes à peut près ici");
                     addMagasins(macarte);
+                    addRayonVilles(macarte);
                 });
             });
         }
