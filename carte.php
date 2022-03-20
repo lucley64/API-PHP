@@ -16,12 +16,6 @@ session_start();
 </head>
 
 <body>
-    <!-- <form action="#" method="post">
-        <label for="NomVille">Entrer le nom de la ville</label>
-        <input type="text" id="NomVille" name="NomVille">
-        <button type="submit">Rechercher</button>
-        <a href="clear.php">Clear</a>
-    </form> -->
     <div id="map">
         <!-- Ici s'affichera la carte -->
     </div>
@@ -31,26 +25,15 @@ session_start();
     <!-- On charge du ajax pour faire des requêtes sur l'api db-ip et l'api ipinfo -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <?php
-    // Ou initialise le tableau des villes
-    $listVilles = [];
-    // on recupère les villes déjà saisies
-    if (isset($_SESSION['Villes'])) {
-        $listVilles = unserialize($_SESSION['Villes']);
+    if (isset($_SESSION['envoiCarte'])) {
+        $recu = unserialize($_SESSION['envoiCarte']);
     }
-    // si une nouvelle ville est saisie on recupère ses coordonées
-    if (isset($_POST["NomVille"])) {
-        $jsonVilles = json_decode(file_get_contents("http://api.geonames.org/search?name_equals=" . $_POST["NomVille"] . "&maxRows=10&featureClass=P&username=shinokiku&type=json&country=FR"));
-        foreach ($jsonVilles->{'geonames'} as &$ville) {
-            $listVilles[] = $ville;
-        }
-    }
-    // on pointe les villes sur la carte
-    echo '<script>function addVilles(macarte){';
-    foreach ($listVilles as &$ville) {
-        echo 'ajouterMarker(\'' . $ville->{'name'} . '\', ' . $ville->{'lat'} . ', ' . $ville->{'lng'} . ', macarte);';
+    echo '<script>function addMagasins(macarte){';
+    foreach ($recu->{'magasins'} as &$magasin) {
+        echo 'ajouterMarker(\'' . $magasin->{'nom'} . '\', ' . $magasin->{'coords'}->{'lat'} . ', ' . $magasin->{'coords'}->{'long'} . ', macarte);';
     }
     echo '}</script>';
-    $_SESSION['Villes'] = serialize($listVilles);
+    var_dump($recu);
     ?>
 
     <!-- Ici le script pour traiter et afficher la map -->
@@ -76,7 +59,7 @@ session_start();
                     var lat = parseFloat(loc[0]);
                     var lon = parseFloat(loc[1]);
                     // Créé l'objet "macarte" et l'insère dans l'élément HTML qui a l'ID "map"
-                    macarte = L.map('map').setView([lat, lon], 15);
+                    macarte = L.map('map').setView([lat, lon], 8);
                     // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
                     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
                         // Il est toujours bien de laisser le lien vers la source des données
@@ -85,7 +68,7 @@ session_start();
                     // On ajoute un marqueur à la position de l'utilisateur
                     var marker = L.marker([lat, lon]).addTo(macarte)
                     marker.bindPopup("Vous êtes à peut près ici");
-                    addVilles(macarte);
+                    addMagasins(macarte);
                 });
             });
         }

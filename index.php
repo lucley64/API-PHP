@@ -21,8 +21,8 @@ session_start();
         <input type="number" name="Rayon" id="Rayon" value="10" min="10" max="100" required>km<br />
         <button type="submit">Rechercher</button>
     </form>
-    <iframe src="http://127.0.0.1/WampProjects/API-PHP/carte" frameborder="0"id="inlineFrameExample" title="Inline Frame Example" width="300" height="200"></iframe>
     <?php
+    echo "<iframe src=\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "/carte\" frameborder=\"0\"id=\"inlineFrameExample\" title=\"Inline Frame Example\" width=\"100%\" height=\"1000px\"></iframe>";
     if (isset($_POST['Produit']) && isset($_POST['Ville']) && isset($_POST['Rayon'])) {
         //On récupère le JSON de tous les magasins en France
         $jsonEntreprise = file_get_contents("https://magosm.magellium.com/geoserver/wfs?request=GetFeature&version=2.0.0&count=10000&outputFormat=application/json&typeName=magosm:france_shops_point&srsName=EPSG:3857&bbox=-1501530.3425145051,4785263.316753057,2607724.29809657,7033123.44456352");
@@ -80,7 +80,7 @@ session_start();
                         }
                     }
                 }
-                var_dump($envoiCarte);
+                $_SESSION['envoiCarte'] = serialize($envoiCarte);
             }
         } else {
             echo 'Veuillez saisir un rayon valide';
